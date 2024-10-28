@@ -1,10 +1,9 @@
 declare global {
     interface Window {
-        app: IMainProcess;
+        dmx: IMainProcess;
     }
 }
 
 export interface IMainProcess {
-    sendMainSend: (msg: string) => void;
-    receiveMessage: (callback: (msg: string) => void) => void;
+    move: (x:number,y:number) => Promise<void>;
 }

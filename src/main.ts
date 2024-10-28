@@ -1,26 +1,25 @@
 import { BrowserWindow, app, ipcMain, IpcMainInvokeEvent } from 'electron'
 import path from "path";
+import {ArtnetDriver, DMX} from "dmx-ts";
 
-const mainURL = `file://${__dirname}/render/index.html`
+let dmx:DMX = new DMX();
+let win:BrowserWindow;
 
-function createWindow() {
-    const win = new BrowserWindow({
+async function createWindow() {
+    win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
         }
     });
-    win.loadURL(mainURL);
-    win.on('ready-to-show', () => {
-        win.webContents.send('receive:message', "Hello Electron!!");
-    });
-
-    win.webContents.openDevTools();
+    await win.loadURL(`file://${__dirname}/render/index.html`);
+    await dmx.addUniverse('demo', new ArtnetDriver());
+    win.webContents.openDevTools()
 }
 
 app.whenReady().then(() => {
-    createWindow();
+    createWindow().then()
 });
 
 app.on("activate", function () {
@@ -33,6 +32,23 @@ app.on("window-all-closed", () => {
     }
 });
 
-ipcMain.handle('send:message', (_: IpcMainInvokeEvent, msg: string) => {
-    console.log(`ipcMain on : ${msg}`);
+ipcMain.handle('move', (_: IpcMainInvokeEvent,x:number,y:number) => {
+    //限界まで回すのに必要なdmx値
+    let dmxMovePower = 85
+
+    //中央の位置
+    let centerX = win.getSize()[0];
+    let centerY = win.getSize()[1];
+
+    //一度回すのに必要な座標
+    let transX = centerX / dmxMovePower;
+    let transY = centerY / dmxMovePower;
+
+    /*
+        中央位置を0としたときの相対座標を一度回すのに必要な座標で割る
+        dmxMovePower/2は、ライトの中央をwindowの中央位置にするための処理
+
+        1,3は、dmxチャンネル（エミュレーターでは、1が回転、3が上下。各ライトの説明書参照）
+     */
+    dmx.update('demo', {1: (x / transX) +　dmxMovePower/2, 3: (y / transY)});
 });
