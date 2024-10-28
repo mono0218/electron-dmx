@@ -3,11 +3,30 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <title>Page Title</title>
 </head>
+
+<style>
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    .grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-image:
+                linear-gradient(to right, red 1px, transparent 1px),
+                linear-gradient(to bottom, red 1px, transparent 1px);
+        background-size: 10px 10px; /* 初期の間隔（10pxごとに線を引く） */
+    }
+</style>
 <body>
-    <div id="contents"></div>
-    <script type="text/javascript" src="script/index.ts"></script>
+    <div class="grid" id="grid"></div>
+    <script type="module" src="script/index.ts"></script>
 </body>
 </html>

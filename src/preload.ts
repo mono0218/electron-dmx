@@ -1,14 +1,8 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
-contextBridge.exposeInMainWorld(
-    "app", {
-        sendMainSend: (msg: string): void => {
-            ipcRenderer.invoke('send:message', msg);
-        },
-        receiveMessage: (callback: (msg: string) => void) => {
-            ipcRenderer.on('receive:message', (_: IpcRendererEvent, msg: string) => {
-                callback(msg);
-            });
-        }
-    }
-);
+// メインプロセスから分離した処理をレンダラーに'myObj'として公開します
+// preload.jsのinvokeとmain.jsのhandleがセットになっており
+// invokeされたをチャンネル'appendTxt'をメインプロセスのhandleで拾う
+contextBridge.exposeInMainWorld('dmx', {
+    move: async (x:number,y:number) => ipcRenderer.invoke('move',x,y),
+});
