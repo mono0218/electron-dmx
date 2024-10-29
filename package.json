@@ -14,6 +14,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "@parcel/transformer-typescript-tsc": "^2.8.0",
+    "@types/dmx": "^0.2.3",
     "@types/node": "^18.11.9",
     "assert": "^2.1.0",
     "browserify-zlib": "^0.2.0",
