@@ -1,6 +1,6 @@
 import { BrowserWindow, app, ipcMain, IpcMainInvokeEvent } from 'electron'
 import path from "path";
-import {ArtnetDriver, DMX} from "dmx-ts";
+import { DMX, SACNDriver} from "dmx-ts";
 
 let dmx:DMX = new DMX();
 let win:BrowserWindow;
@@ -13,8 +13,10 @@ async function createWindow() {
             preload: path.join(__dirname, "preload.js"),
         }
     });
-    await win.loadURL(`file://${__dirname}/render/index.html`);
-    await dmx.addUniverse('demo', new ArtnetDriver());
+    win.loadURL(`file://${__dirname}/render/index.html`);
+    dmx.addUniverse('Universe', new SACNDriver(0,{
+        ip: "192.168.0.25"
+    }));
     win.webContents.openDevTools()
 }
 
@@ -50,5 +52,6 @@ ipcMain.handle('move', (_: IpcMainInvokeEvent,x:number,y:number) => {
 
         1,3は、dmxチャンネル（エミュレーターでは、1が回転、3が上下。各ライトの説明書参照）
      */
-    dmx.update('demo', {1: (x / transX) +　dmxMovePower/2, 3: (y / transY)});
+    dmx.update('Universe', {1: (x / transX) +　dmxMovePower/2, 3: (y / transY)});
 });
+
